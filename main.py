@@ -1,6 +1,7 @@
 from selenium import webdriver
 from time import sleep
 import pdb
+import sys
 #from secrets import pw
 
 
@@ -67,24 +68,62 @@ class InstaBot:
         return names
 
     def sorting(self, amount):
-        sorted_not_following_back = [user for user in self.not_following_back if self.num_followers(user) >= amount]
+        sorted_not_following_back = [user for user in self.not_following_back if self.num_followers(user) <= amount]
         return sorted_not_following_back
 
     def num_followers(self, username):
         self.driver.get("https://instagram.com/" + username)
-        sleep(2)
-        abos = self.driver.find_element_by_xpath("/html/body/div[1]/section/main/div/header/section/ul/li[2]/a")
-        abo_number = abos.title #get_attribute("title")
-        print(abo_number)
-        abo_number = abo_number.replace(".", "")
-        #abo_number = abo_number.replace("k", "000")
-        #abo_number = abo_number.replace("m", "000000")
-        #return int(abo_number)
+        while True:
+            try:
+                # You have to click first before you can access the desired element with the title
+                self.driver.find_element_by_xpath("/html/body/div[1]/section/main/div/header/section/ul/li[2]/a").click()
         
+                abo_number = self.driver.find_element_by_xpath("/html/body/div[1]/section/main/div/header/section/ul/li[2]/a/span").\
+                    get_attribute("title")
+            except:
+                continue
+            break
+        abo_number = abo_number.replace(".", "")
+        return int(abo_number)
+    
+    def true_follower(self):
+        # definitively not finished
+        friends = []
+        self.driver.find_element_by_xpath("//a[contains(@href,'/{}')]".format(self.username))\
+            .click()
+        sleep(2)
+        self.driver.find_element_by_xpath("//a[contains(@href,'/p/')]")\
+            .click()
+        # while True:
+        #     try:
+        #         self.driver.find_element_by_xpath("/html/body/div[1]/section/main/div/div[2]/article/div[1]/div/div[1]/div[1]/a")\
+        #             .click()
+        #     except:
+        #         print("Error:", sys.exc_info()[0])
+        #         continue
+        #     break
+
+        def spam(self):
+            # definitively not finished
+            self.driver.get("https://www.instagram.com/direct/inbox/")
+            sleep(2)
+            try:
+                self.driver.find_element_by_xpath("//button[contains(text(), 'Anfrage')]")\
+                .click()
+                print("Es gibt Anfragen")
+            except:
+                print("Keine Anfrage")
+            else:
+                sleep(2)
+                self.driver.find_element_by_xpath("/html/body/div[1]/section/div/div[2]/div/div/div[1]/div[2]/div[2]/div/a")\
+                    .click()
+                
+                
 
 
-
+        
+        
 my_bot = InstaBot('philip_singer', "12Flohkistei")
 #my_bot.get_unfollowers()
 #print(my_bot.sorting(2000))
-my_bot.num_followers("offenegesellschaft")
+my_bot.true_follower()
